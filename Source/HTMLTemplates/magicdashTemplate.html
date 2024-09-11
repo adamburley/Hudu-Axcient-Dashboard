@@ -1,0 +1,95 @@
+<div class="nasa__content">
+    <div class="nasa__block">
+        <header class="nasa__block-header">
+            <h1><i class='fas fa-info-circle icon'></i>Basic Info</h1>
+        </header>
+        <main>
+            <button class="button" style="background-color: var(--primary)" role="button"><a style="color: white;"
+                    role="button" href="{{client_link}}" target="_blank"><i class="fas fa-server me-2"></i>Axcient
+                    Portal</a>
+            </button><br />
+            <article>
+                <div class='basic_info__section'>
+                    <h2>Client Name</h2>
+                    <p>
+                        {{name}}
+                    </p>
+                </div>
+                <div class='basic_info__section'>
+                    <h2>Health Status</h2>
+                    <p>
+                        {{health_status}}
+                    </p>
+                </div>
+                <div class="basic_info__section">
+                    <h2>Hudu sync date</h2>
+                    <p>
+                        {{last_update}}
+                    </p>
+                </div>
+                <div class="basic_info__section">
+                    <h2>Time Zone</h2>
+                    <p>
+                        {{time_zone}}<br />(All timestamps)
+                    </p>
+                </div>
+            </article>
+        </main>
+    </div>
+    <div class="nasa__block">
+        <header class="nasa__block-header">
+            <h1><i class='fas fa-server icon'></i>Protected Devices</h1>
+        </header>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Server</th>
+                    <th>Workstation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Appliance-Based</th>
+                    <td>{{ab_server}}</td>
+                    <td>{{ab_workstation}}</td>
+                </tr>
+                <tr>
+                    <th>D2C</th>
+                    <td>{{d2c_server}}</td>
+                    <td>{{d2c_workstation}}</td>
+                </tr>
+                <tr>
+                    <th>Cloud Archive</th>
+                    <td>{{ar_server}}</td>
+                    <td>{{ar_workstation}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br />
+        <header class="nasa__block-header">
+            <h1><i class='fas fa-server icon'></i>Appliances</h1>
+        </header>
+        {{appliances}}
+    </div>
+</div>
+<div class="nasa__block">
+    <header class='nasa__block-header'>
+        <h1><i class="fa-solid fa-triangle-exclamation"></i></i>Warnings</h1>
+    </header>
+    {{warning_devices}}
+</div>
+<div class="nasa__block">
+    <header class='nasa__block-header'>
+        <h1><i class="fa-solid fa-server"></i>Servers</h1>
+    </header>
+
+    {{server_devices}}
+
+</div>
+<div class="nasa__block">
+    <header class='nasa__block-header'>
+        <h1><i class="fa-solid fa-server"></i>Workstations</h1>
+    </header>
+    {{workstation_devices}}
+</div>

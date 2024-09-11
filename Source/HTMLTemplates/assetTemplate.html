@@ -1,0 +1,70 @@
+<div class="nasa__content">
+    <div class="nasa__block" style="margin-bottom:20px;height:auto">
+        <header class="nasa__block-header">
+            <h1>
+                <img src="https://dwpxs7qy0kohm.cloudfront.net/favicon.ico" style="vertical-align: middle;" />
+                Axcient x360Recover
+            </h1>
+        </header>
+        <div style="padding-left: 15px; padding-right: 15px; padding-bottom: 15px;">
+            <div class="card__item">
+                <button class="button" style="background-color: var(--primary)" role="button">
+                    <a style="color: white;" role="button" href="{{axcient_url}}" target="_blank" title="Open {name} in x360Recover portal">
+                        Open in x360Recover
+                        &nbsp;<i class="fa-solid fa-up-right-from-square">&nbsp;</i>
+                    </a>
+                </button>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Name</div>
+                <div class="card__item-slot">{{name}}</div>
+            </div>
+            <div class="card__item" style="{{errStyle}}">
+                <div class="card__item-slot">Status</div>
+                <div class="card__item-slot">{{status}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Replication Type</div>
+                <div class="card__item-slot">{{replication_type}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Last local backup</div>
+                <div class="card__item-slot">{{last_local_backup}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Local usage</div>
+                <div class="card__item-slot">{{local_usage}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Last cloud backup</div>
+                <div class="card__item-slot">{{last_cloud_backup}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Cloud usage</div>
+                <div class="card__item-slot">{{cloud_usage}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Protected volumes</div>
+                <div class="card__item-slot">{{volumes}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Last Hudu sync</div>
+                <div class="card__item-slot">{{last_update}}</div>
+
+            </div>
+        </div>
+    </div>
+    <div class="nasa__block" style="margin-bottom:20px;height:auto">
+        <header class="nasa__block-header">
+            <h1><i class="fa-solid fa-person-digging">&nbsp;</i>Backup Jobs</h1>
+        </header>
+        {{jobs}}
+    </div>
+    <div class="nasa__block" style="margin-bottom:20px;height:auto">
+        <header class="nasa__block-header">
+            <h1><i class="fa-solid fa-check">&nbsp;</i>Autoverify</h1>
+            <h2>(Latest 3)</h2>
+        </header>
+        {{dav}}
+    </div>
+</div>

@@ -1,0 +1,21 @@
+{
+    "createMagicDash": true,
+    "updateDeviceAssets": true,
+    "serverAssetLayoutId": 12,
+    "workstationAssetLayoutId": 11,
+    "huduBaseUrl": "https://hudu.farnsworthandsons.com",
+    "huduAPIKey": "mymoderatelylongapikey",
+    "axcientAPIKey": "mysomewhatlongerapikey",
+    "autoMatch": true,
+    "styling": {
+        "magicDashHealthyClass": "success",
+        "magicDashWarningClass": "danger"
+    },
+    "matches": [
+        {
+            "name": "US Robots and Mechanical Men",
+            "axcientId": 19822008,
+            "huduID": 2057
+        }
+    ]
+}

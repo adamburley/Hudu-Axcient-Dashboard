@@ -1,0 +1,71 @@
+
+/* -------------- Custom Magic Dash shade: "axcient" -------------- */
+
+/* Header and footer font and icon tweaks */
+.custom-fast-fact.custom-fast-fact--axcient .custom-fast-fact__header img {
+    background-color: white;
+    border-radius: 4px;
+}
+.custom-fast-fact.custom-fast-fact--axcient .custom-fast-fact__header h1 {
+    font-size: 1.1em;
+    padding-left: 1.1em;
+}
+.custom-fast-fact.custom-fast-fact--axcient .custom-fast-fact__footer a {
+    font-size: 1.1em;
+}
+
+/* Background */
+.custom-fast-fact.custom-fast-fact--axcient {
+    /* Background on Altaro.com is #0064ab */
+    background: linear-gradient(to bottom right, #EC2A01, #ed5f01e0, #EE870A, #EB6802, #ED6101, #EC2A01);
+}
+
+/* -------------- Custom Magic Dash shade: "axcientwarning" -------------- */
+
+/* Header Icon & Text */
+.custom-fast-fact.custom-fast-fact--axcientwarning .custom-fast-fact__header img {
+    background-color: white;
+    border-radius: 4px;
+}
+
+.custom-fast-fact.custom-fast-fact--axcientwarning .custom-fast-fact__header h1 {
+    color:white;
+    font-size: 1.1em;
+    padding-left: 1.1em;
+}
+
+.custom-fast-fact.custom-fast-fact--axcientwarning .custom-fast-fact__header {
+    background-color: #ff2222;
+}
+
+/* Paragraph around the Message */
+.custom-fast-fact.custom-fast-fact--axcientwarning p {
+    background-color: #ff9999;
+    border-radius: 12px;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    width: 95%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    border: 3px solid #ff2222;
+}
+
+/* Footer & Text */
+.custom-fast-fact.custom-fast-fact--axcientwarning .custom-fast-fact__footer a {
+    background-color: #ff2222;
+    font-size: 1.5em;
+    color: white;
+}
+
+.custom-fast-fact.custom-fast-fact--axcientwarning .custom-fast-fact__footer i {
+    color: inherit;
+}
+
+/* Background */
+.custom-fast-fact.custom-fast-fact--axcientwarning {
+    background: repeating-linear-gradient(45deg,
+            #ff2222,
+            #ff2222 10px,
+            #ff9999 10px,
+            #ff9999 20px)
+}

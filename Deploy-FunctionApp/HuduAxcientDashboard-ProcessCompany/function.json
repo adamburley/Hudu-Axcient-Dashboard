@@ -1,0 +1,9 @@
+{
+  "bindings": [
+    {
+      "name": "companyData",
+      "type": "activityTrigger",
+      "direction": "in"
+    }
+  ]
+}

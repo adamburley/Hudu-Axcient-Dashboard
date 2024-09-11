@@ -1,0 +1,81 @@
+<details class="mce-accordion" {{jobOpen}}>
+    <summary>{{name}}</summary>
+    <button class="button" style="background-color: var(--primary)" role="button">
+        <a style="color: white;" role="button" href="https://my.axcient.net/home/job/{{id}}" target="_blank" title="Open job {{name}} in Axcient x360Recover portal">
+            Open job in x360Recover
+            &nbsp;<i class="fa-solid fa-up-right-from-square">&nbsp;</i>
+        </a>
+    </button>
+    <div class="nasa__content">
+        <div class="nasa__block">
+            <div class="card__item">
+                <div class="card__item-slot">Type</div>
+                <div class="card__item-slot">{{type}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Destination</div>
+                <div class="card__item-slot">{{destination}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Description</div>
+                <div class="card__item-slot">{{description}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Status</div>
+                <div class="card__item-slot">{{enabled}} - {{health_status}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Last run</div>
+                <div class="card__item-slot">{{last_run}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Schedule Name</div>
+                <div class="card__item-slot">{{schedule_name}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Schedule Description</div>
+                <div class="card__item-slot">{{schedule_description}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Schedule Type</div>
+                <div class="card__item-slot">{{schedule_type}}</div>
+            </div>
+        </div>
+        <div class="nasa__block">
+            <div class="card__item">
+                <div class="card__item-slot">Schedule Status</div>
+                <div class="card__item-slot">{{schedule_status}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Schedule Offset</div>
+                <div class="card__item-slot">{{schedule_offset}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Schedule - Business Hours</div>
+                <div class="card__item-slot">{{schedule_businessHours}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Schedule - After Hours</div>
+                <div class="card__item-slot">{{schedule_nbHours}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Throttling</div>
+                <div class="card__item-slot">{{throttling}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Throttling - Business Hours</div>
+                <div class="card__item-slot">{{throttling_business}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot"> Throttling - After Hours</div>
+                <div class="card__item-slot">{{throttling_nb}}</div>
+            </div>
+            <div class="card__item">
+                <div class="card__item-slot">Replication Info</div>
+                <div class="card__item-slot">{{replication_info}}</div>
+            </div>        
+        </div>
+    </div>
+    <h2>Replication Schedule</h2>
+    <pre>{{replication_schedule}}</pre>
+</details>

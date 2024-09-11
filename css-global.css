@@ -1,0 +1,49 @@
+/* -------------- Make custom asset layout rich text fields be full-width -------------- */
+.card__item-slot .field {
+     display: block;
+}
+
+/* -------------- Make asset layout questions stand out -------------- */
+.card__item-slot:first-child {
+    color: #FF6900;
+    font-weight: bold;
+}
+
+/* -------------- Magic Dash general layout tweaks -------------- */
+
+.nasa__block-header h1 i {
+display:inline !important
+}
+
+.card__item table {
+    border-collapse: collapse;
+    margin: 5px 0;
+    font-size: 0.8em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.card__item h2,
+.card__item p {
+    font-size: 0.8em;
+    font-family: sans-serif;
+}
+
+.card__item th,
+.card__item td {
+    padding: 5px 5px;
+    width: auto;
+}
+
+.card__item thead tr {
+    text-align: left;
+}
+
+.card__item tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.nasa__block {
+    height: auto !important;
+}
