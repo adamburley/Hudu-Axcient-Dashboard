@@ -3,8 +3,8 @@ param($companyData)
 
 
 <# 
-    Script Name: Hudu-Axcient Backup Dashboard
-    URL: 
+    Hudu-Axcient Dashboard
+    https://github.com/adamburley/Hudu-Axcient-Dashboard
     Copywrite: Adam Burley 2024
     Version: 1.0
 #>
