@@ -167,7 +167,7 @@ function Merge-Template {
     process {
         $thisResult = $Template.Clone()
         $Parameters.GetEnumerator() | ForEach-Object {
-            $thisResult = $thisResult -replace "{{$($_.Key)}}", $_.Value
+            $thisResult = $thisResult.Replace("{{$($_.Key)}}", $_.Value, [System.StringComparison]::OrdinalIgnoreCase)
         }
         $resultAL.Add($thisResult) | Out-Null
     }
@@ -757,9 +757,9 @@ Set-Variable -Name magicdashTemplate -Value @'
 #region ----------- MAIN EXECUTION -----------
 
 
-Find-RequiredModuleVersion -requiredModules $requiredModules -localModulePath '.\Modules' | Import-Module
+Find-RequiredModuleVersion -requiredModules $requiredModules -localModulePath "$PSScriptRoot\Modules" | Import-Module
 
-$config = Get-Content -Path '.\config.json' | ConvertFrom-Json
+$config = Get-Content -Path "$PSScriptRoot\config.json" | ConvertFrom-Json
 
 Write-Host "Connecting to Hudu at $($config.huduBaseUrl)" -ForegroundColor Cyan
 

@@ -167,7 +167,7 @@ function Merge-Template {
     process {
         $thisResult = $Template.Clone()
         $Parameters.GetEnumerator() | ForEach-Object {
-            $thisResult = $thisResult -replace "{{$($_.Key)}}", $_.Value
+            $thisResult = $thisResult.Replace("{{$($_.Key)}}", $_.Value, [System.StringComparison]::OrdinalIgnoreCase)
         }
         $resultAL.Add($thisResult) | Out-Null
     }
