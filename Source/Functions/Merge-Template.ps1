@@ -6,7 +6,6 @@ function Merge-Template {
 
         [Parameter(Mandatory, ValueFromPipeline)]
         [hashtable]$Parameters
-
     )
     begin {
         $resultAL = [System.Collections.ArrayList]::new()

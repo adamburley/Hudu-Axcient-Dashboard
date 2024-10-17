@@ -5,7 +5,7 @@ $requiredModules = @(
     @{ Name = 'HuduAPI'   ; Version = '2.50'  }
 )
 
-clear
+Clear-Host
 Write-Host "Hudu - Axcient Dashboard Interactive Setup" -ForegroundColor Cyan
 Write-Host "------------------------------------------" -ForegroundColor Cyan
 
@@ -21,7 +21,7 @@ if (Test-Path -Path .\config.json) {
     Write-Host "Calling for Hudu companies...`n" -ForegroundColor Yellow
     New-HuduBaseURL -BaseURL $config.huduBaseUrl -ErrorAction Stop
     New-HuduAPIKey -ApiKey $config.huduAPIKey -ErrorAction Stop
-    $huduCompanies = Get-HuduCompanies | sort name
+    $huduCompanies = Get-HuduCompanies | Sort-Object name
 
     Write-Host "Retrieved " -ForegroundColor Yellow -NoNewline
     Write-Host $huduCompanies.Count -ForegroundColor Green -NoNewline
@@ -100,10 +100,10 @@ $assetLayouts = Get-HuduAssetLayouts
 Write-Host "`nSpecify asset layout for Server and Workstation assets below.`nThis is needed even if only creating a Magic Dash at this time." -ForegroundColor Yellow
 
 do {
-    $assetLayouts | sort name | ft id, name
+    $assetLayouts | Sort-Object name | Format-Table id, name
     $config.serverAssetLayoutId = Read-Host -Prompt 'Enter the ID of the Server Asset Layout'
     Write-Host "You selected " -ForegroundColor Yellow -NoNewline
-    Write-host ($assetLayouts | ? id -eq $config.serverAssetLayoutId).name -ForegroundColor Green -NoNewline
+    Write-host ($assetLayouts | Where-Object id -eq $config.serverAssetLayoutId).name -ForegroundColor Green -NoNewline
     Write-Host ". Is this correct? Y/n: " -ForegroundColor Yellow -NoNewline
     $confirm = Read-Host
     if ($confirm -ne 'y') {
@@ -112,10 +112,10 @@ do {
 } while ($null -eq $config.serverAssetLayoutId)
 
 do {
-    $assetLayouts | sort name | ft id, name
+    $assetLayouts | Sort-Object name | Format-Table id, name
     $config.workstationAssetLayoutId = Read-Host -Prompt 'Enter the ID of the Workstation Asset Layout. It may be the same as the Server layout'
     Write-Host "You selected " -ForegroundColor Yellow -NoNewline
-    Write-host ($assetLayouts | ? id -eq $config.workstationAssetLayoutId).name -ForegroundColor Green -NoNewline
+    Write-host ($assetLayouts | Where-Object id -eq $config.workstationAssetLayoutId).name -ForegroundColor Green -NoNewline
     Write-Host ". Is this correct? Y/n: " -ForegroundColor Yellow -NoNewline
     $confirm = Read-Host
     if ($confirm -ne 'y') {
@@ -140,7 +140,7 @@ $axcientClients = Get-Client -ErrorAction Stop | Sort-Object name
 Write-Host "`n------ Client Matching ------`n" -ForegroundColor Magenta
 
 Write-Host "Calling for Hudu companies...`n" -ForegroundColor Yellow
-$huduCompanies = Get-HuduCompanies | sort name
+$huduCompanies = Get-HuduCompanies | Sort-Object name
 
 Write-Host "Retrieved " -ForegroundColor Yellow -NoNewline
 Write-Host $huduCompanies.Count -ForegroundColor Green -NoNewline

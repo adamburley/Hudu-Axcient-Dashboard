@@ -29,7 +29,7 @@ $scriptHeader = @'
     Hudu-Axcient Dashboard
     https://github.com/adamburley/Hudu-Axcient-Dashboard
     Copywrite: Adam Burley 2024
-    Version: 1.0
+    Version: 1.1
 #>
 #requires -Version 7.2
 '@

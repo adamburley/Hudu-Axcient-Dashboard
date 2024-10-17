@@ -13,7 +13,7 @@ $axcientClients, $huduCompanies, $config = Get-InitialSyncData -config $config
 $start = Get-date
 $unMatchedClients = @()
 foreach ($client in $axcientClients) {
-    if ($match = $config.matches | where { $_.axcientId -eq $client.id }) {
+    if ($match = $config.matches | Where-Object { $_.axcientId -eq $client.id }) {
         Write-Host "Match found for $($client.name) with $($match.name)" -ForegroundColor Cyan
         Invoke-ProcessCompany -client $client -match $match -huduCompanies $huduCompanies -config $config
     }
@@ -23,7 +23,7 @@ foreach ($client in $axcientClients) {
     }
 }
 $end = get-date
-New-TimeSpan -Start $start -End $end
+Write-Host "`nUpdates processed in : $(New-TimeSpan -Start $start -End $end | Select-Object -ExpandProperty TotalMinutes) minutes`n" -ForegroundColor Green
 
 Write-Host "These clients in Axcient were not matched to a company in Hudu:"
 $unMatchedClients | ForEach-Object { Write-Host $_ }

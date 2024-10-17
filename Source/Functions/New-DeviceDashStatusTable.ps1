@@ -25,14 +25,14 @@ function New-DeviceDashStatusTable {
     }
     process {
         # Find the Hudu asset, if we can
-        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $device.name) : $huduWorkstations | ? name -eq $device.name
+        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $device.name) : $huduWorkstations | Where-Object name -eq $device.name
         if (-not $hAss) {
-            $nShort = $device.name -split '\.' | select -first 1
-            $hAss =  $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $nShort) : $huduWorkstations | ? name -eq $nShort
+            $nShort = $device.name -split '\.' | Select-Object -first 1
+            $hAss =  $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $nShort) : $huduWorkstations | Where-Object name -eq $nShort
         }
         if ($hAss) {
-            $hUrl = $hAss | select -expandproperty url
-            $hAssName = $hAss | select -expandproperty name
+            $hUrl = $hAss | Select-Object -ExpandProperty url
+            $hAssName = $hAss | Select-Object -ExpandProperty name
             $disabled = ''
         }
         else {

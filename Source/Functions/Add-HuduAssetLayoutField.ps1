@@ -1,8 +1,6 @@
-# Thanks, @JohnDuprey! https://github.com/KelvinTegelaar/CIPP-API/blob/master/Modules/CippExtensions/Public/Extension%20Functions/Add-HuduAssetLayoutM365Field.ps1
+# Credit for original code: JohnDuprey via CIPP-API
 function Add-HuduAssetLayoutField {
-    Param(
-        $AssetLayoutId
-    )
+    param($AssetLayoutId)
 
     $M365Field = @{
         position     = 0

@@ -7,7 +7,7 @@ New-HuduBaseURL $companyData.config.huduBaseUrl
 New-HuduAPIKey $companyData.config.huduAPIKey
 Initialize-AxcientAPI -ApiKey $companyData.config.axcientAPIKey
 
-$match = $companyData.config.matches | where { $_.axcientId -eq $companyData.client.id }
+$match = $companyData.config.matches | Where-Object axcientId -eq $companyData.client.id
 
 try {
     if ($match) {

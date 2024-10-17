@@ -1,9 +1,9 @@
 function Update-DeviceAsset {
     param($device, $huduServers, $huduWorkstations)
-    $hAss = $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $device.name) : $huduWorkstations | ? name -eq $device.name
+    $hAss = $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $device.name) : $huduWorkstations | Where-Object name -eq $device.name
     if (-not $hAss) {
-        $nShort = $device.name -split '\.' | select -first 1
-        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $nShort) : $huduWorkstations | ? name -eq $nShort
+        $nShort = $device.name -split '\.' | Select-Object -First 1
+        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $nShort) : $huduWorkstations | Where-Object name -eq $nShort
     }
     if (-not $hAss) {
         Write-Host "Unable to find a match for $($device.name)" -ForegroundColor Red
@@ -16,20 +16,20 @@ function Update-DeviceAsset {
     Write-Host "Matched Axcient device $($device.name) to Hudu asset $($hAss.name)" -ForegroundColor Cyan
     $jobs = Get-BackupJob -Device $device
     $jobOpen = $jobs.count -eq 1 ? 'open' : ''
-    $dav = Get-DeviceAutoVerify -Device $device | select -first 1 | select -expandproperty autoverify_details | sort timestamp -Descending | select -first 3
+    $dav = Get-DeviceAutoVerify -Device $device | Select-Object -first 1 | Select-Object -expandproperty autoverify_details | Sort-Object timestamp -Descending | Select-Object -first 3
     $templateData = @{
         axcient_url       = $device.device_details_page_url
         name              = $device.name
         status            = $device.current_health_status.status
-        errStyle = $device.current_health_status.status -eq 'NORMAL' ? '' : "background-color: #fcd1d3"
+        errStyle          = $device.current_health_status.status -eq 'NORMAL' ? '' : "background-color: #fcd1d3"
         replication_type  = $device.d2c ? 'D2C' : 'Appliance'
         last_local_backup = $device.latest_local_rp ? $device.latest_local_rp : ''
         local_usage       = $device.local_usage ? "$([math]::round($device.local_usage/1gb,1)) GB" : ''
         last_cloud_backup = $device.latest_cloud_rp ? $device.latest_cloud_rp : ''
         cloud_usage       = $device.cloud_usage ? "$([math]::round($device.cloud_usage/1gb,1)) GB" : ''
-        volumes = $device.volumes -join "<br />"
+        volumes           = $device.volumes -join "<br />"
         last_update       = (Get-Date).ToString()
-        jobs              = $jobs | % {
+        jobs              = $jobs | ForEach-Object {
             # some jobs have different schedules - possibly offsite = true
             $schedule = $_.schedule | ConvertFrom-Json -Depth 10
             $scheduleStatus = $schedule.isEnabled ? 'Enabled' : 'Disabled'
@@ -37,7 +37,7 @@ function Update-DeviceAsset {
             $busAllowFull = $schedule.backup.businessHours.allowFull ? 'Full / Incremental' : 'Incremental only'
             $nbAllowFull = $schedule.backup.nonBusinessHours.allowFull ? 'Full / Incremental' : 'Incremental only'
             @{
-                jobOpen               = $jobOpen
+                jobOpen                = $jobOpen
                 name                   = $_.name
                 id                     = $_.id
                 description            = $_.description
@@ -49,7 +49,7 @@ function Update-DeviceAsset {
                 schedule_name          = $schedule.name
                 schedule_description   = $schedule.description
                 schedule_type          = $schedule.type
-                schedule_status       = $scheduleStatus
+                schedule_status        = $scheduleStatus
                 schedule_offset        = $schedule.offsetBackup
                 schedule_businessHours = "Every $($schedule.backup.businessHours.repeat.hour) hour(s), $busAllowFull"
                 schedule_nbHours       = "Every $($schedule.backup.nonBusinessHours.repeat.hour) hour(s), $nbAllowFull"
@@ -61,7 +61,7 @@ function Update-DeviceAsset {
             }
         } | Merge-Template -Template $assetJobTemplate
         
-        dav               = $dav | % {
+        dav               = $dav | ForEach-Object {
             @{
                 timestamp                = $_.timestamp
                 status                   = $_.status

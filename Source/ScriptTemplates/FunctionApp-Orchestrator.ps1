@@ -22,7 +22,5 @@ else {
         } | ConvertTo-Json -Depth 10 -Compress
         Invoke-DurableActivity -FunctionName 'HuduAxcientDashboard-ProcessCompany' -Input $companyData #-NoWait
     }
-
-    #Wait-ActivityFunction -Task $ParallelTasks
     Write-Host "FINAL RESULTS`n $($results | Out-string)"
 }

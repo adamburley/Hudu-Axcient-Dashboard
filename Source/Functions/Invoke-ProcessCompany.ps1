@@ -1,11 +1,11 @@
 function Invoke-ProcessCompany {
     param(
-        $client,   
+        $client,
         $match,
         $huduCompanies,
         $config
     )   
-    $huduCompany = $huduCompanies | where { $_.id -eq $match.huduID }
+    $huduCompany = $huduCompanies | Where-Object id -eq $match.huduID
 
     $devices = $client | Get-Device
     $huduServers = Get-HuduAssets -AssetLayoutId $config.serverAssetLayoutId -CompanyID $huduCompany.id
@@ -28,7 +28,7 @@ function Invoke-ProcessCompany {
     }
 
     if ($config.updateDeviceAssets) {
-        $devices | % {
+        $devices | ForEach-Object {
             Write-Host "Updating asset for $($_.name)"
             Update-DeviceAsset -device $_ -huduServers $huduServers -huduWorkstations $huduWorkstations 
         }

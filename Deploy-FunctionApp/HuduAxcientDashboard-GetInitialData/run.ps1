@@ -5,16 +5,14 @@ param($config)
     Hudu-Axcient Dashboard
     https://github.com/adamburley/Hudu-Axcient-Dashboard
     Copywrite: Adam Burley 2024
-    Version: 1.0
+    Version: 1.1
 #>
 #requires -Version 7.2
 
 #region ----------- FUNCTIONS -----------
-# Thanks, @JohnDuprey! https://github.com/KelvinTegelaar/CIPP-API/blob/master/Modules/CippExtensions/Public/Extension%20Functions/Add-HuduAssetLayoutM365Field.ps1
+# Credit for original code: JohnDuprey via CIPP-API
 function Add-HuduAssetLayoutField {
-    Param(
-        $AssetLayoutId
-    )
+    param($AssetLayoutId)
 
     $M365Field = @{
         position     = 0
@@ -43,28 +41,30 @@ function Add-HuduAssetLayoutField {
     Write-Host "Added Axcient x360Recover field to $($AssetLayout.name)" -ForegroundColor Green
 }
 function Find-RequiredModuleVersion {
-    param($requiredModules,
-    $localModulePath,
-    [switch]$Interactive)
+    param(
+        $requiredModules,
+        $localModulePath,
+        [switch]$Interactive
+    )
     foreach ($m in $requiredModules) {
         $found = $false
         $testPath = "$localModulePath\$($M.Name)"
         if (Test-Path -Path $testPath) { 
-            $foundVer = gci $testPath | select -ExpandProperty Name | sort -Descending | select -First 1
+            $foundVer = Get-ChildItem $testPath | Select-Object -ExpandProperty Name | Sort-Object -Descending | Select-Object -First 1
             if ($foundVer -ge $m.Version) {
                 Write-Host "$($m.Name) $($m.Version) found in Modules folder" -ForegroundColor Green
                 $found = $true
                 "$localModulePath\$($m.Name)"
             }
         } 
-        elseif (($installedModules = Get-Module $m.Name -ListAvailable) -and ($topVer = $installedModules | sort Version -Descending | select -first 1).Version -ge $m.Version) {
-                Write-Host "$($m.Name) $($m.Version) found in installed modules" -ForegroundColor Green
-                $found = $true
-                $topVer.Path
+        elseif (($installedModules = Get-Module $m.Name -ListAvailable) -and ($topVer = $installedModules | Sort-Object Version -Descending | Select-Object -first 1).Version -ge $m.Version) {
+            Write-Host "$($m.Name) $($m.Version) found in installed modules" -ForegroundColor Green
+            $found = $true
+            $topVer.Path
         }
         if (-not $found) {
             Write-Host "$($m.Name) $($m.Version) not found" -ForegroundColor Red
-            if ($Interactive){
+            if ($Interactive) {
                 Write-Host "Would you like to download to $localModulePath`? (Y/n): " -ForegroundColor Yellow -NoNewline
                 if ((Read-Host) -in 'y', '') {
                     if (-not (Test-Path -Path $localModulePath)) {
@@ -72,11 +72,13 @@ function Find-RequiredModuleVersion {
                     }   
                     Save-Module -Name $m.Name -Path $localModulePath -MinimumVersion $m.Version
                     "$localModulePath\$($m.Name)"
-                } else {
+                }
+                else {
                     Write-Host "Please ensure module is installed or available before continuing." -ForegroundColor Red
                     pause
                 }
-            } else {
+            }
+            else {
                 Write-Error "Unable to locate module $($m.Name) $($m.Version). It is required to continue." -ErrorAction Stop
             }
         }
@@ -91,8 +93,8 @@ function Get-InitialSyncData {
     if ($config.autoMatch) {
         Write-Host "Automatch running..." -ForegroundColor Magenta
         $softMatches = 0
-        foreach ($c in $axcientClients | where { $_.id -inotin $Config.matches.axcientId }) {
-            $match = $huduCompanies | ? { $_.name -eq $c.name }
+        foreach ($c in $axcientClients | Where-Object id -inotin $Config.matches.axcientId) {
+            $match = $huduCompanies | Where-Object name -eq $c.name
             if ($match) {
                 $config.matches += [PSCustomObject]@{
                     name      = $c.name
@@ -111,12 +113,12 @@ function Get-InitialSyncData {
 }
 function Invoke-ProcessCompany {
     param(
-        $client,   
+        $client,
         $match,
         $huduCompanies,
         $config
     )   
-    $huduCompany = $huduCompanies | where { $_.id -eq $match.huduID }
+    $huduCompany = $huduCompanies | Where-Object id -eq $match.huduID
 
     $devices = $client | Get-Device
     $huduServers = Get-HuduAssets -AssetLayoutId $config.serverAssetLayoutId -CompanyID $huduCompany.id
@@ -139,7 +141,7 @@ function Invoke-ProcessCompany {
     }
 
     if ($config.updateDeviceAssets) {
-        $devices | % {
+        $devices | ForEach-Object {
             Write-Host "Updating asset for $($_.name)"
             Update-DeviceAsset -device $_ -huduServers $huduServers -huduWorkstations $huduWorkstations 
         }
@@ -148,7 +150,6 @@ function Invoke-ProcessCompany {
         Write-Host "Device asset update is disabled"
     }
 }
-
 function Merge-Template {
     [CmdletBinding()]
     param (
@@ -157,7 +158,6 @@ function Merge-Template {
 
         [Parameter(Mandatory, ValueFromPipeline)]
         [hashtable]$Parameters
-
     )
     begin {
         $resultAL = [System.Collections.ArrayList]::new()
@@ -217,14 +217,14 @@ function New-DeviceDashStatusTable {
     }
     process {
         # Find the Hudu asset, if we can
-        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $device.name) : $huduWorkstations | ? name -eq $device.name
+        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $device.name) : $huduWorkstations | Where-Object name -eq $device.name
         if (-not $hAss) {
-            $nShort = $device.name -split '\.' | select -first 1
-            $hAss =  $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $nShort) : $huduWorkstations | ? name -eq $nShort
+            $nShort = $device.name -split '\.' | Select-Object -first 1
+            $hAss =  $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $nShort) : $huduWorkstations | Where-Object name -eq $nShort
         }
         if ($hAss) {
-            $hUrl = $hAss | select -expandproperty url
-            $hAssName = $hAss | select -expandproperty name
+            $hUrl = $hAss | Select-Object -ExpandProperty url
+            $hAssName = $hAss | Select-Object -ExpandProperty name
             $disabled = ''
         }
         else {
@@ -282,7 +282,7 @@ function Update-CompanyMatches {
 
     if ($Update) {
         Write-Host "Updating existing list. $($Config.matches.Count) matches already exist." -ForegroundColor Green
-        $AxcientClients = $AxcientClients | where { $_.id -inotin $Config.matches.axcientId }
+        $AxcientClients = $AxcientClients | Where-Object { $_.id -inotin $Config.matches.axcientId }
         Write-Host "$($AxcientClients.Count) Axcient clients are unmatched." -ForegroundColor Magenta
     }
 
@@ -293,7 +293,7 @@ function Update-CompanyMatches {
     $axcientMatches = @()
     $softMatches = 0
     foreach ($c in $axcientClients) {
-        $match = $huduCompanies | ? { $_.name -eq $c.name }
+        $match = $huduCompanies | Where-Object { $_.name -eq $c.name }
         if ($match) {
             $config.matches += [PSCustomObject]@{
                 name      = $c.name
@@ -310,8 +310,8 @@ function Update-CompanyMatches {
     Write-Host $softMatches -ForegroundColor Green -NoNewline
     Write-Host " clients.`n" -ForegroundColor Yellow
 
-    $axcientNonMatches = $axcientClients | where { $_ -notin $axcientMatches }
-    $huduNonMatches = $huduCompanies | where { $_ -notin $huduMatches }
+    $axcientNonMatches = $axcientClients | Where-Object { $_ -notin $axcientMatches }
+    $huduNonMatches = $huduCompanies | Where-Object { $_ -notin $huduMatches }
 
     Write-host $axcientNonMatches.Count -ForegroundColor Red -NoNewline
     Write-Host " Axcient clients did not match." -ForegroundColor Yellow
@@ -325,24 +325,24 @@ function Update-CompanyMatches {
         Write-Host "Axcient".PadRight(50) "Hudu" -ForegroundColor Magenta
         Write-Host "------".PadRight(50) "----" -ForegroundColor Magenta
         do {
-            $gvOutput = @($axcientNonMatches | Select @{ n = 'Source'; e = { 'Axcient' } }, name, id)
-            $gvOutput += $huduNonMatches | Select @{ n = 'Source'; e = { 'Hudu' } }, name, id
-            $selection = $gvOutput | sort name | out-gridview -OutputMode Multiple
+            $gvOutput = @($axcientNonMatches | Select-Object @{ n = 'Source'; e = { 'Axcient' } }, name, id)
+            $gvOutput += $huduNonMatches | Select-Object @{ n = 'Source'; e = { 'Hudu' } }, name, id
+            $selection = $gvOutput | Sort-Object name | Out-GridView -OutputMode Multiple
             if ($selection.Count -eq 2) {
-                $axcientMatch = $selection | ? Source -eq 'Axcient'
-                $huduMatch = $selection | ? Source -eq 'Hudu'
+                $axcientMatch = $selection | Where-Object Source -eq 'Axcient'
+                $huduMatch = $selection | Where-Object Source -eq 'Hudu'
                 $config.matches += [PSCustomObject]@{
                     name      = $axcientMatch.name
                     axcientId = $axcientMatch.id
                     huduID    = $huduMatch.id
                 }
-                $axcientNonMatches = $axcientNonMatches | where { $_.id -ne $axcientMatch.id }
-                $huduNonMatches = $huduNonMatches | where { $_.id -ne $huduMatch.id }
-                Write-Host $axcientMatch.name.PadRight(50) $huduMatch.name -ForegroundColor Green
+                $axcientNonMatches = $axcientNonMatches | Where-Object id -ne $axcientMatch.id
+                $huduNonMatches = $huduNonMatches | Where-Object id -ne $huduMatch.id
+                Write-Host $axcientMatch.name.PadRight(70) $huduMatch.name -ForegroundColor Green
             }
             elseif ($selection.Count -eq 1) {
-                $axcientMatch = $selection | ? Source -eq 'Axcient'
-                $axcientNonMatches = $axcientNonMatches | where { $_.id -ne $axcientMatch.id }
+                $axcientMatch = $selection | Where-Object Source -eq 'Axcient'
+                $axcientNonMatches = $axcientNonMatches | Where-Object { $_.id -ne $axcientMatch.id }
                 Write-Host $axcientMatch.name.PadRight(50) X -ForegroundColor Red
             }
             else {
@@ -358,10 +358,10 @@ function Update-CompanyMatches {
 }
 function Update-DeviceAsset {
     param($device, $huduServers, $huduWorkstations)
-    $hAss = $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $device.name) : $huduWorkstations | ? name -eq $device.name
+    $hAss = $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $device.name) : $huduWorkstations | Where-Object name -eq $device.name
     if (-not $hAss) {
-        $nShort = $device.name -split '\.' | select -first 1
-        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | ? name -eq $nShort) : $huduWorkstations | ? name -eq $nShort
+        $nShort = $device.name -split '\.' | Select-Object -First 1
+        $hAss = $device.Type -eq 'SERVER' ? ($huduServers | Where-Object name -eq $nShort) : $huduWorkstations | Where-Object name -eq $nShort
     }
     if (-not $hAss) {
         Write-Host "Unable to find a match for $($device.name)" -ForegroundColor Red
@@ -374,20 +374,20 @@ function Update-DeviceAsset {
     Write-Host "Matched Axcient device $($device.name) to Hudu asset $($hAss.name)" -ForegroundColor Cyan
     $jobs = Get-BackupJob -Device $device
     $jobOpen = $jobs.count -eq 1 ? 'open' : ''
-    $dav = Get-DeviceAutoVerify -Device $device | select -first 1 | select -expandproperty autoverify_details | sort timestamp -Descending | select -first 3
+    $dav = Get-DeviceAutoVerify -Device $device | Select-Object -first 1 | Select-Object -expandproperty autoverify_details | Sort-Object timestamp -Descending | Select-Object -first 3
     $templateData = @{
         axcient_url       = $device.device_details_page_url
         name              = $device.name
         status            = $device.current_health_status.status
-        errStyle = $device.current_health_status.status -eq 'NORMAL' ? '' : "background-color: #fcd1d3"
+        errStyle          = $device.current_health_status.status -eq 'NORMAL' ? '' : "background-color: #fcd1d3"
         replication_type  = $device.d2c ? 'D2C' : 'Appliance'
         last_local_backup = $device.latest_local_rp ? $device.latest_local_rp : ''
         local_usage       = $device.local_usage ? "$([math]::round($device.local_usage/1gb,1)) GB" : ''
         last_cloud_backup = $device.latest_cloud_rp ? $device.latest_cloud_rp : ''
         cloud_usage       = $device.cloud_usage ? "$([math]::round($device.cloud_usage/1gb,1)) GB" : ''
-        volumes = $device.volumes -join "<br />"
+        volumes           = $device.volumes -join "<br />"
         last_update       = (Get-Date).ToString()
-        jobs              = $jobs | % {
+        jobs              = $jobs | ForEach-Object {
             # some jobs have different schedules - possibly offsite = true
             $schedule = $_.schedule | ConvertFrom-Json -Depth 10
             $scheduleStatus = $schedule.isEnabled ? 'Enabled' : 'Disabled'
@@ -395,7 +395,7 @@ function Update-DeviceAsset {
             $busAllowFull = $schedule.backup.businessHours.allowFull ? 'Full / Incremental' : 'Incremental only'
             $nbAllowFull = $schedule.backup.nonBusinessHours.allowFull ? 'Full / Incremental' : 'Incremental only'
             @{
-                jobOpen               = $jobOpen
+                jobOpen                = $jobOpen
                 name                   = $_.name
                 id                     = $_.id
                 description            = $_.description
@@ -407,7 +407,7 @@ function Update-DeviceAsset {
                 schedule_name          = $schedule.name
                 schedule_description   = $schedule.description
                 schedule_type          = $schedule.type
-                schedule_status       = $scheduleStatus
+                schedule_status        = $scheduleStatus
                 schedule_offset        = $schedule.offsetBackup
                 schedule_businessHours = "Every $($schedule.backup.businessHours.repeat.hour) hour(s), $busAllowFull"
                 schedule_nbHours       = "Every $($schedule.backup.nonBusinessHours.repeat.hour) hour(s), $nbAllowFull"
@@ -419,7 +419,7 @@ function Update-DeviceAsset {
             }
         } | Merge-Template -Template $assetJobTemplate
         
-        dav               = $dav | % {
+        dav               = $dav | ForEach-Object {
             @{
                 timestamp                = $_.timestamp
                 status                   = $_.status
@@ -433,7 +433,6 @@ function Update-DeviceAsset {
     $result = $templateData | Merge-Template $assetTemplate
     Set-HuduAsset -id $hAss.id -CompanyId $hAss.company_id -Fields @{ 'axcient_x360recover' = $result } | Out-Null
 }
-# Config must be passed to activity
 function Update-MagicDash {
     param(
         $client,
@@ -442,24 +441,24 @@ function Update-MagicDash {
         $huduWorkstations,
         $devices
     )
-    $d2c = $client.devices_counters.d2c | select -ExpandProperty Count | measure-object -Sum | select -expandproperty Sum
-    $appliance = $client.devices_counters.appliance_based | select -ExpandProperty Count | measure-object -Sum | select -expandproperty Sum
-   $templateData = @{
-        name = $client.name
-        health_status = $client.health_status
-        ab_server = $client.devices_counters.appliance_based | ? type -eq 'SERVER' | select -ExpandProperty Count
-        ab_workstation = $client.devices_counters.appliance_based | ? type -eq 'WORKSTATION' | select -ExpandProperty Count
-        d2c_server = $client.devices_counters.d2c | ? type -eq 'SERVER' | select -ExpandProperty Count
-        d2c_workstation = $client.devices_counters.d2c | ? type -eq 'WORKSTATION' | select -ExpandProperty Count
-        ar_server = $client.devices_counters.cloud_archive | ? type -eq 'SERVER' | select -ExpandProperty Count
-        ar_workstation = $client.devices_counters.cloud_archive | ? type -eq 'WORKSTATION' | select -ExpandProperty Count
-        client_link = "https://my.axcient.net/home/client/$($client.id)"
-        warning_devices = $devices | where { $_.current_health_status.status -ne 'NORMAL' } | sort type,name | New-DeviceDashStatusTable -huduServers $huduServers -huduWorkstations $huduWorkstations
-        server_devices = $devices | where { $_.type -eq 'SERVER' } | sort name | New-DeviceDashStatusTable -huduServers $huduServers -huduWorkstations $huduWorkstations
-        workstation_devices = $devices | where { $_.type -eq 'WORKSTATION' }  | sort name | New-DeviceDashStatusTable -huduServers $huduServers -huduWorkstations $huduWorkstations
-        appliances = New-ApplianceDashBlock -client $client
-        last_update = (Get-Date).ToString("dd MMM yyyy h:mm tt")
-        time_zone = (Get-TimeZone).DisplayName
+    $d2c       = $client.devices_counters.d2c             | Select-Object -ExpandProperty Count | measure-object -Sum | Select-Object -ExpandProperty Sum
+    $appliance = $client.devices_counters.appliance_based | Select-Object -ExpandProperty Count | measure-object -Sum | Select-Object -ExpandProperty Sum
+    $templateData = @{
+        name                = $client.name
+        health_status       = $client.health_status
+        ab_server           = $client.devices_counters.appliance_based | Where-Object type -eq 'SERVER'      | Select-Object -ExpandProperty Count
+        ab_workstation      = $client.devices_counters.appliance_based | Where-Object type -eq 'WORKSTATION' | Select-Object -ExpandProperty Count
+        d2c_server          = $client.devices_counters.d2c             | Where-Object type -eq 'SERVER'      | Select-Object -ExpandProperty Count
+        d2c_workstation     = $client.devices_counters.d2c             | Where-Object type -eq 'WORKSTATION' | Select-Object -ExpandProperty Count
+        ar_server           = $client.devices_counters.cloud_archive   | Where-Object type -eq 'SERVER'      | Select-Object -ExpandProperty Count
+        ar_workstation      = $client.devices_counters.cloud_archive   | Where-Object type -eq 'WORKSTATION' | Select-Object -ExpandProperty Count
+        client_link         = "https://my.axcient.net/home/client/$($client.id)"
+        warning_devices     = $devices | Where-Object { $_.current_health_status.status -ne 'NORMAL' } | Sort-Object type, name | New-DeviceDashStatusTable -huduServers $huduServers -huduWorkstations $huduWorkstations
+        server_devices      = $devices | Where-Object { $_.type -eq 'SERVER' }                         | Sort-Object name       | New-DeviceDashStatusTable -huduServers $huduServers -huduWorkstations $huduWorkstations
+        workstation_devices = $devices | Where-Object { $_.type -eq 'WORKSTATION' }                    | Sort-Object name       | New-DeviceDashStatusTable -huduServers $huduServers -huduWorkstations $huduWorkstations
+        appliances          = New-ApplianceDashBlock -client $client
+        last_update         = (Get-Date).ToString("dd MMM yyyy h:mm tt")
+        time_zone           = (Get-TimeZone).DisplayName
     }
     $magicDashContent = Merge-Template -Template $magicDashTemplate -Parameters $templateData
     # Create the magic dash
@@ -467,10 +466,9 @@ function Update-MagicDash {
         CompanyName = $huduCompany.name
         Title       = 'Axcient X360Recover'
         Message     = "<strong>{0}</strong><br />Appliance: {1}<br />D2C: {2}" -f $client.health_status, $appliance, $d2c
-        Shade       = $client.health_status -eq 'NORMAL' ? $config.styling.dashHealthy : $config.styling.dashWarning
+        Shade       = $client.health_status -eq 'NORMAL' ? $config.styling.dashHealthy : $config.styling.dashWarning # Requires access to $config variable from script-scope
         Content     = $magicDashContent
         ImageUrl    = "https://dwpxs7qy0kohm.cloudfront.net/favicon.ico"
-        #Icon        = 'fa-solid fa-floppy-disk'
     }
     Set-HuduMagicDash @mdSplash | Out-Null
 }

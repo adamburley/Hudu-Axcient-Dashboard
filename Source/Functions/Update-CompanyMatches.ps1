@@ -8,7 +8,7 @@ function Update-CompanyMatches {
 
     if ($Update) {
         Write-Host "Updating existing list. $($Config.matches.Count) matches already exist." -ForegroundColor Green
-        $AxcientClients = $AxcientClients | where { $_.id -inotin $Config.matches.axcientId }
+        $AxcientClients = $AxcientClients | Where-Object { $_.id -inotin $Config.matches.axcientId }
         Write-Host "$($AxcientClients.Count) Axcient clients are unmatched." -ForegroundColor Magenta
     }
 
@@ -19,7 +19,7 @@ function Update-CompanyMatches {
     $axcientMatches = @()
     $softMatches = 0
     foreach ($c in $axcientClients) {
-        $match = $huduCompanies | ? { $_.name -eq $c.name }
+        $match = $huduCompanies | Where-Object { $_.name -eq $c.name }
         if ($match) {
             $config.matches += [PSCustomObject]@{
                 name      = $c.name
@@ -36,8 +36,8 @@ function Update-CompanyMatches {
     Write-Host $softMatches -ForegroundColor Green -NoNewline
     Write-Host " clients.`n" -ForegroundColor Yellow
 
-    $axcientNonMatches = $axcientClients | where { $_ -notin $axcientMatches }
-    $huduNonMatches = $huduCompanies | where { $_ -notin $huduMatches }
+    $axcientNonMatches = $axcientClients | Where-Object { $_ -notin $axcientMatches }
+    $huduNonMatches = $huduCompanies | Where-Object { $_ -notin $huduMatches }
 
     Write-host $axcientNonMatches.Count -ForegroundColor Red -NoNewline
     Write-Host " Axcient clients did not match." -ForegroundColor Yellow
@@ -51,24 +51,24 @@ function Update-CompanyMatches {
         Write-Host "Axcient".PadRight(50) "Hudu" -ForegroundColor Magenta
         Write-Host "------".PadRight(50) "----" -ForegroundColor Magenta
         do {
-            $gvOutput = @($axcientNonMatches | Select @{ n = 'Source'; e = { 'Axcient' } }, name, id)
-            $gvOutput += $huduNonMatches | Select @{ n = 'Source'; e = { 'Hudu' } }, name, id
-            $selection = $gvOutput | sort name | out-gridview -OutputMode Multiple
+            $gvOutput = @($axcientNonMatches | Select-Object @{ n = 'Source'; e = { 'Axcient' } }, name, id)
+            $gvOutput += $huduNonMatches | Select-Object @{ n = 'Source'; e = { 'Hudu' } }, name, id
+            $selection = $gvOutput | Sort-Object name | Out-GridView -OutputMode Multiple
             if ($selection.Count -eq 2) {
-                $axcientMatch = $selection | ? Source -eq 'Axcient'
-                $huduMatch = $selection | ? Source -eq 'Hudu'
+                $axcientMatch = $selection | Where-Object Source -eq 'Axcient'
+                $huduMatch = $selection | Where-Object Source -eq 'Hudu'
                 $config.matches += [PSCustomObject]@{
                     name      = $axcientMatch.name
                     axcientId = $axcientMatch.id
                     huduID    = $huduMatch.id
                 }
-                $axcientNonMatches = $axcientNonMatches | where { $_.id -ne $axcientMatch.id }
-                $huduNonMatches = $huduNonMatches | where { $_.id -ne $huduMatch.id }
-                Write-Host $axcientMatch.name.PadRight(50) $huduMatch.name -ForegroundColor Green
+                $axcientNonMatches = $axcientNonMatches | Where-Object id -ne $axcientMatch.id
+                $huduNonMatches = $huduNonMatches | Where-Object id -ne $huduMatch.id
+                Write-Host $axcientMatch.name.PadRight(70) $huduMatch.name -ForegroundColor Green
             }
             elseif ($selection.Count -eq 1) {
-                $axcientMatch = $selection | ? Source -eq 'Axcient'
-                $axcientNonMatches = $axcientNonMatches | where { $_.id -ne $axcientMatch.id }
+                $axcientMatch = $selection | Where-Object Source -eq 'Axcient'
+                $axcientNonMatches = $axcientNonMatches | Where-Object { $_.id -ne $axcientMatch.id }
                 Write-Host $axcientMatch.name.PadRight(50) X -ForegroundColor Red
             }
             else {

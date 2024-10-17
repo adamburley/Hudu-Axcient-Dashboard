@@ -5,13 +5,12 @@ param($Timer)
     Hudu-Axcient Dashboard
     https://github.com/adamburley/Hudu-Axcient-Dashboard
     Copywrite: Adam Burley 2024
-    Version: 1.0
+    Version: 1.1
 #>
 #requires -Version 7.2
 
 
-# Option 1: File Path
-# This handles for both hard-coded config file parameters and environment variables + Data Table
+# Option 1: File Path JSON
 $config = Get-Content -Path $PSScriptRoot\config.json -Raw
 
 # Option 2: Environment & Hard coded values
@@ -44,10 +43,8 @@ if (-not $config) {
     exit 1
 }
 else {
-    $configObject = $config | ConvertFrom-Json
-
     Write-Host "Configuration loaded."
-    Write-Host ($config | convertfrom-json | select -ExcludeProperty *key | fl | out-string)
+    Write-Host ($config | convertfrom-json | Select-Object -ExcludeProperty *key | Format-List | out-string)
 
     $InstanceId = Start-DurableOrchestration -FunctionName 'HuduAxcientDashboard-Orchestrator' -InputObject $config
     Write-Host "Started orchestration with ID = '$InstanceId'"

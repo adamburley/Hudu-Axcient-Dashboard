@@ -7,8 +7,8 @@ function Get-InitialSyncData {
     if ($config.autoMatch) {
         Write-Host "Automatch running..." -ForegroundColor Magenta
         $softMatches = 0
-        foreach ($c in $axcientClients | where { $_.id -inotin $Config.matches.axcientId }) {
-            $match = $huduCompanies | ? { $_.name -eq $c.name }
+        foreach ($c in $axcientClients | Where-Object id -inotin $Config.matches.axcientId) {
+            $match = $huduCompanies | Where-Object name -eq $c.name
             if ($match) {
                 $config.matches += [PSCustomObject]@{
                     name      = $c.name
